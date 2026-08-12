@@ -48,20 +48,9 @@ awk -v Pairwise=$pairwise '
 
 BEGIN {
     FS = "\t"
-
-    light_gray = "#dddddd"
-
-    Font_size = 18
-    Font_family = "sans-serif"
-    Label_color = "black"
-    Label_hdist = 20
-    Label_vdist = Font_size + 15
-
-    Line_width = 3
-    Marker_size = 5
-
     Decimals = 5
     Almost_zero = 1e-10
+    FontSize = 20
 }
 
 NR == 1 {
@@ -103,7 +92,7 @@ END {
     grid_h = 4 * 150
     grid_x = 400
     grid_y = 100
-    decimals = 5
+    offset = 15
     white = "#ffffff"
     light_gray = "#e5e5e5"
     mid_gray = "#aaaaaa"
@@ -117,10 +106,10 @@ END {
     for (k = 0; k <= 4; k++) add_line(grid_x + k * grid_w/4, grid_y, 0, grid_h)
     for (k = 0; k <= 4; k++) add_line(grid_x, grid_y + k * grid_h/4, grid_w, 0)
 
-    add_label(grid_x, grid_y + grid_h + 30, Xmin, "middle")
-    add_label(grid_x + grid_w, grid_y + grid_h + 30, Xmax, "middle")
-    add_label(grid_x - 15, grid_y, Ymax, "end")
-    add_label(grid_x - 15, grid_y + grid_h, Ymin, "end")
+    add_label(grid_x, grid_y + grid_h + 2 * offset, Xmin, "middle")
+    add_label(grid_x + grid_w, grid_y + grid_h + 2 * offset, Xmax, "middle")
+    add_label(grid_x - offset, grid_y, Ymax, "end")
+    add_label(grid_x - offset, grid_y + grid_h, Ymin, "end")
 
     print("</svg>") > file
 }
@@ -187,8 +176,8 @@ function add_line(x, y, dx, dy) {
 }
 
 function add_label(x, y, num, anchor) {
-    label = int(num) == num ? num : sprintf("%." decimals "f", num)
-    print("<text font-size=" q(20),
+    label = int(num) == num ? num : sprintf("%." Decimals "f", num)
+    print("<text font-size=" q(FontSize),
     "font-family=" q("sans-serif"),
     "text-anchor=" q(anchor),
     "x=" q(x),
