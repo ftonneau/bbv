@@ -49,42 +49,7 @@ awk -v Pairwise=$pairwise '
 BEGIN {
     FS = "\t"
 
-    Colors[1] = "black"
-    Colors[2] = "red"
-    Colors[3] = "blue"
-    Colors[4] = "yellow"
-    Colors[5] = "gray"
-    Colors[6] = "black"
-    Colors[7] = "red"
-    Colors[8] = "blue"
-    Colors[9] = "yellow"
-    Colors[10] = "gray"
-
-    Dashes[1] = "none"
-    Dashes[2] = "none"
-    Dashes[3] = "none"
-    Dashes[4] = "none"
-    Dashes[5] = "none"
-    Dashes[6] = "1, 1"
-    Dashes[7] = "1, 1"
-    Dashes[8] = "1, 1"
-    Dashes[9] = "1, 1"
-    Dashes[10] = "1, 1"
-
-    Output = "temp.svg"
-
-    Page_width = 1000
-    Page_height = 700
-
-    Background = "white"
-
-    View_x = 200
-    View_y = 75
-    View_width = Page_width - 1.5 * View_x
-    View_height = Page_height - 2 * View_y
-
-    Grid_color = "#cccccc"
-    Grid_pen = 1
+    light_gray = "#dddddd"
 
     Font_size = 18
     Font_family = "sans-serif"
@@ -97,8 +62,6 @@ BEGIN {
 
     Decimals = 5
     Almost_zero = 1e-10
-
-    Dquote = "\042";
 }
 
 NR == 1 {
@@ -130,6 +93,29 @@ END {
     }
     if (!x_range) die("x range could not be determined")
     if (!y_range) die("y range could not be determined")
+
+    file = "tmp.svg"
+
+    page_w = 1200
+    page_h = 800
+    side_w = 200
+    grid_w = 4 * 200
+    grid_h = 4 * 150
+    grid_x = 300
+    grid_y = 100
+    white = "#ffffff"
+    light_gray = "#e5e5e5"
+    mid_gray = "#aaaaaa"
+
+    print("<svg xmlns=" q("http://www.w3.org/2000/svg"),
+          "width=" q(page_w), "height=" q(page_h),
+          ">") > file
+    fill_rect(0, 0, page_w, page_h, white)
+    fill_rect(0, 0, side_w, page_h, light_gray)
+    for (k = 0; k <= 4; k++) add_line(grid_x + k * grid_w/4, grid_y, 0, grid_h)
+    for (k = 0; k <= 4; k++) add_line(grid_x, grid_y + k * grid_h/4, grid_w, 0)
+
+    print("</svg>") > file
 }
 
 function die(msg) {
@@ -167,6 +153,30 @@ function y_check(value) {
 
 function is_num(x) {
     return x == x + 0
+}
+
+function q(text) {
+    return "\042" text "\042"
+}
+
+function fill_rect(x, y, w, h, color) {
+    print("<rect x=" q(x),
+    "y=" q(y),
+    "width=" q(w),
+    "height=" q(h),
+    "fill=" q(color),
+    "stroke-width=" q(0),
+    "/>") > file
+}
+
+function add_line(x, y, dx, dy) {
+    print("<line x1=" q(x),
+    "y1=" q(y),
+    "x2=" q(x + dx),
+    "y2=" q(y + dy),
+    "stroke=" q(mid_gray),
+    "stroke-width=" q(1),
+    "/>") > file
 }
 
 '
