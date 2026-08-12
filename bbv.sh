@@ -49,8 +49,16 @@ awk -v Pairwise=$pairwise '
 BEGIN {
     FS = "\t"
     Decimals = 5
-    Almost_zero = 1e-10
     FontSize = 20
+    Line_width = 3
+    Dot_radius = 6
+    Colors[1] = "#303030"
+    Colors[2] = "#b01010"
+    Colors[3] = "#137099"
+    Colors[4] = "#806b10"
+    Colors[5] = "#730037"
+    Colors[6] = "#707070"
+    Ncolors = 6
 }
 
 NR == 1 {
@@ -71,13 +79,17 @@ NR == 1 {
     else {
         for (k = 1; k <= NF; k += 1) y_check($k)
     }
+    for (k = 1; k <= NF; k++) {
+        Data[NR, k] = $k
+    }
 }
 
 END {
-    if (HasDied) exit 2
+    if (HasDied) exit 1
+    Nrows = NR
     if (!Pairwise) {
         Xmin = 1
-        Xmax = NR
+        Xmax = Nrows
         x_range = 1
     }
     if (!x_range) die("x range could not be determined")
@@ -103,13 +115,26 @@ END {
     fill_rect(0, 0, page_w, page_h, white)
     fill_rect(0, 0, side_w, page_h, light_gray)
 
-    for (k = 0; k <= 4; k++) add_line(grid_x + k * grid_w/4, grid_y, 0, grid_h)
-    for (k = 0; k <= 4; k++) add_line(grid_x, grid_y + k * grid_h/4, grid_w, 0)
+    for (k = 0; k <= 4; k++) add_hair(grid_x + k * grid_w/4, grid_y, 0, grid_h)
+    for (k = 0; k <= 4; k++) add_hair(grid_x, grid_y + k * grid_h/4, grid_w, 0)
 
     add_label(grid_x, grid_y + grid_h + 2 * offset, Xmin, "middle")
     add_label(grid_x + grid_w, grid_y + grid_h + 2 * offset, Xmax, "middle")
     add_label(grid_x - offset, grid_y, Ymax, "end")
     add_label(grid_x - offset, grid_y + grid_h, Ymin, "end")
+
+    if (Pairwise) {
+        for (k = 1; k <= Ncols; k += 2) {
+            plot_pairs(k)
+            add_pair_key(k)
+        }
+    }
+    else {
+        for (k = 1; k <= Ncols; k += 1) {
+            plot_values(k)
+            add_column_key(k)
+        }
+    }
 
     print("</svg>") > file
 }
@@ -165,7 +190,7 @@ function fill_rect(x, y, w, h, color) {
     "/>") > file
 }
 
-function add_line(x, y, dx, dy) {
+function add_hair(x, y, dx, dy) {
     print("<line x1=" q(x),
     "y1=" q(y),
     "x2=" q(x + dx),
@@ -186,5 +211,65 @@ function add_label(x, y, num, anchor) {
     ">" label "</text>") > file
 }
 
+function plot_pairs(col,
+    marker_id, marker_ref, picker,
+    row, x, y) {
+    marker_id = "M" col
+    marker_ref = "url(#" marker_id ")"
+    picker = modulo((col + 1) / 2, Ncolors)
+
+    print("<marker id=" q(marker_id),
+    "overflow=\"visible\">",
+    "<circle r=" q(Dot_radius),
+    "fill=" q(Colors[picker]),
+    "stroke-width=" q("none"),
+    "/> </marker>") > file
+
+    print("<path fill=" q("none"),
+    "stroke=" q("none"),
+    "marker-start=" q(marker_ref),
+    "marker-mid=" q(marker_ref),
+    "marker-end=" q(marker_ref),
+    "d=\"") > file
+    for (row = 1; row <= Nrows; row++) {
+        x = Data[row, col]
+        y = Data[row, col + 1]
+        if (is_num(x) && is_num(y)) printf("M%f %f ", xc(x), yc(y)) > file
+    }
+    print "\"/>" > file
+}
+
+function add_pair_key(col,
+    pick) {
+}
+
+function plot_values(col) {
+}
+
+function add_column_key(col) {
+}
+
+function modulo(k, kmax,
+    remain) {
+    remain = k % kmax
+    if (remain == 0) remain = kmax
+    return remain
+}
+
+function xc(x) {
+    return grid_x + (x - Xmin)/(Xmax - Xmin) * grid_w
+}
+
+function yc(y) {
+    return grid_y + grid_h - (y - Ymin)/(Ymax - Ymin) * grid_h
+}
+
 '
+
+if [ "$?" -eq 0 ]; then
+    $BBV_BACKEND tmp.svg &
+else
+    exit 1
+fi
+
 
