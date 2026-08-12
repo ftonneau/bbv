@@ -101,8 +101,6 @@ END {
     if (!x_range) die("x range could not be determined")
     if (!y_range) die("y range could not be determined")
 
-    file = "tmp.svg"
-
     page_w = 1300
     page_h = 800
     grid_w = 4 * 200
@@ -119,6 +117,8 @@ END {
     page_white = "#fffff5"
     grid_gray = "#aaaaaa"
     text_color = "black"
+
+    file = "tmp.svg"
 
     print("<svg xmlns=" q("http://www.w3.org/2000/svg"),
     "width=" q(page_w), "height=" q(page_h),
@@ -183,7 +183,7 @@ function is_num(x) {
 }
 
 function q(text) {
-    return "\042" text "\042"
+    return "\042" text "\042" # surround text with quotes
 }
 
 function add_hair(x, y, dx, dy) {
@@ -293,11 +293,10 @@ function plot_values(col,
 }
 
 function modulo(k, kmax,
-    remain) {
-    remain = k % kmax
-    if (remain == 0) remain = kmax
-    # => return wrapped value from 1 to kmax
-    return remain
+    remainder) {
+    remainder = k % kmax
+    if (remainder == 0) remainder = kmax
+    return remainder # return wrapped value from 1 to kmax
 }
 
 function xc(x) {
