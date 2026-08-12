@@ -41,10 +41,12 @@ fi
 
 # ------------------------------------------------------------
 
+rm tmp.svg 2>/dev/null
+
 pairwise=0
 [ "$1" = x ] && pairwise=1
 
-awk -v Pairwise=$pairwise '
+awk -v Pairwise=$pairwise ' # begin awk
 
 BEGIN {
     FS = "\t"
@@ -52,6 +54,7 @@ BEGIN {
     FontSize = 20
     Line_width = 3
     Dot_radius = 6
+    Dashes = "5, 3"
     Colors[1] = "#303030"
     Colors[2] = "#b01010"
     Colors[3] = "#137099"
@@ -85,7 +88,7 @@ NR == 1 {
 }
 
 END {
-    if (HasDied) exit 1
+    if (HasDied) exit 
     Nrows = NR
     if (!Pairwise) {
         Xmin = 1
@@ -99,41 +102,38 @@ END {
 
     page_w = 1350
     page_h = 800
-    side_w = 200
+    side_w = 185
     grid_w = 4 * 200
     grid_h = 4 * 150
     grid_x = 400
     grid_y = 100
-    offset = 15
-    white = "#ffffff"
-    light_gray = "#e5e5e5"
-    mid_gray = "#aaaaaa"
+    h_offset = 15
+    v_offset = 25
+    key_x = 50
+    key_y = 40
+    key_tab = 80
+    key_step = 40
+    text_dy = int(FontSize / 3)
 
     print("<svg xmlns=" q("http://www.w3.org/2000/svg"),
           "width=" q(page_w), "height=" q(page_h),
           ">") > file
-    fill_rect(0, 0, page_w, page_h, white)
-    fill_rect(0, 0, side_w, page_h, light_gray)
+    fill_rect(0, 0, page_w, page_h, "white")
+    fill_rect(0, 0, side_w, page_h, "#e5e5e5")
 
     for (k = 0; k <= 4; k++) add_hair(grid_x + k * grid_w/4, grid_y, 0, grid_h)
     for (k = 0; k <= 4; k++) add_hair(grid_x, grid_y + k * grid_h/4, grid_w, 0)
 
-    add_label(grid_x, grid_y + grid_h + 2 * offset, Xmin, "middle")
-    add_label(grid_x + grid_w, grid_y + grid_h + 2 * offset, Xmax, "middle")
-    add_label(grid_x - offset, grid_y, Ymax, "end")
-    add_label(grid_x - offset, grid_y + grid_h, Ymin, "end")
+    add_label(grid_x, grid_y + grid_h + v_offset, Xmin, "middle")
+    add_label(grid_x + grid_w, grid_y + grid_h + v_offset, Xmax, "middle")
+    add_label(grid_x - h_offset, grid_y, Ymax, "end")
+    add_label(grid_x - h_offset, grid_y + grid_h, Ymin, "end")
 
     if (Pairwise) {
-        for (k = 1; k <= Ncols; k += 2) {
-            plot_pairs(k)
-            add_pair_key(k)
-        }
-    }
-    else {
-        for (k = 1; k <= Ncols; k += 1) {
-            plot_values(k)
-            add_column_key(k)
-        }
+        for (k = 1; k <= Ncols; k += 2) plot_pairs(k )
+     }
+    else  {
+        for (k = 1; k <= Ncols; k++) plot_values(k )
     }
 
     print("</svg>") > file
@@ -195,7 +195,7 @@ function add_hair(x, y, dx, dy) {
     "y1=" q(y),
     "x2=" q(x + dx),
     "y2=" q(y + dy),
-    "stroke=" q(mid_gray),
+    "stroke=" q("#aaaaaa"),
     "stroke-width=" q(1),
     "/>") > file
 }
@@ -206,7 +206,7 @@ function add_label(x, y, num, anchor) {
     "font-family=" q("sans-serif"),
     "text-anchor=" q(anchor),
     "x=" q(x),
-    "y=" q(y),
+    "y=" q(y + text_dy) ,
     "fill=" q("black"),
     ">" label "</text>") > file
 }
@@ -236,17 +236,60 @@ function plot_pairs(col,
         y = Data[row, col + 1]
         if (is_num(x) && is_num(y)) printf("M%f %f ", xc(x), yc(y)) > file
     }
-    print "\"/>" > file
+    print("\"/>") > file
+
+    print("<path marker-start=" q(marker_ref),
+    "d=" q("M" key_x "," key_y " Z"),
+    "/>",
+    "<text font-size=" q(FontSize),
+    "font-family=" q("sans-serif"),
+    "x=" q(key_tab),
+    "y=" q(key_y + text_dy),
+    "fill=" q("black"),
+    ">" col "-" (col + 1),
+    "</text>") > file
+
+    key_y += key_step
 }
 
-function add_pair_key(col,
-    pick) {
-}
+function plot_values(col,
+    color_picker, dash_picker, pattern,
+    row, y, yprev) {
+    color_picker = modulo(col, Ncolors)
+    dash_picker = modulo(col, Ncolors * 2)
+    pattern = dash_picker <= Ncolors ? "none" : Dashes
 
-function plot_values(col) {
-}
+    print("<path fill=" q("none"),
+    "stroke=" q(Colors[color_picker]),
+    "stroke-dasharray=" q(pattern),
+    "stroke-linejoin=" q("round"),
+    "stroke-width=" q(Line_width),
+    "d=\"") > file
+    y = Data[1, col]
+    if (is_num(y)) printf("M%f %f ", xc(1), yc(y)) > file
+    for (row = 2; row <= Nrows; row++) {
+        yprev = y
+        y = Data[row, col]
+        if (!is_num(yprev) && is_num(y)) printf("M%f %f ", xc(row), yc(y)) > file
+        else if (is_num(yprev) && is_num(y)) printf("L%f %f ", xc(row), yc(y)) > file
+    }
+    print("\"/>") > file
 
-function add_column_key(col) {
+    print("<path fill=" q("none"),
+    "stroke=" q(Colors[color_picker]),
+    "stroke-dasharray=" q(pattern),
+    "stroke-width=" q(Line_width),
+    "d=" q("M" key_x - Dot_radius * 2"," key_y " h" Dot_radius * 4),
+    "/>",
+    "<text font-size=" q(FontSize),
+    "font-family=" q("sans-serif"),
+    "x=" q(key_tab),
+    "y=" q(key_y + text_dy),
+    "fill=" q("black"),
+    ">" col,
+    "</text>") > file
+
+    key_y += key_step
 }
 
 function modulo(k, kmax,
@@ -264,12 +307,11 @@ function yc(y) {
     return grid_y + grid_h - (y - Ymin)/(Ymax - Ymin) * grid_h
 }
 
-'
+' # end awk
 
-if [ "$?" -eq 0 ]; then
+if [ -f tmp.svg ]; then
     $BBV_BACKEND tmp.svg &
 else
     exit 1
 fi
-
 
