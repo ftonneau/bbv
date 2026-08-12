@@ -96,13 +96,14 @@ END {
 
     file = "tmp.svg"
 
-    page_w = 1200
+    page_w = 1350
     page_h = 800
     side_w = 200
     grid_w = 4 * 200
     grid_h = 4 * 150
-    grid_x = 300
+    grid_x = 400
     grid_y = 100
+    decimals = 5
     white = "#ffffff"
     light_gray = "#e5e5e5"
     mid_gray = "#aaaaaa"
@@ -112,8 +113,14 @@ END {
           ">") > file
     fill_rect(0, 0, page_w, page_h, white)
     fill_rect(0, 0, side_w, page_h, light_gray)
+
     for (k = 0; k <= 4; k++) add_line(grid_x + k * grid_w/4, grid_y, 0, grid_h)
     for (k = 0; k <= 4; k++) add_line(grid_x, grid_y + k * grid_h/4, grid_w, 0)
+
+    add_label(grid_x, grid_y + grid_h + 30, Xmin, "middle")
+    add_label(grid_x + grid_w, grid_y + grid_h + 30, Xmax, "middle")
+    add_label(grid_x - 15, grid_y, Ymax, "end")
+    add_label(grid_x - 15, grid_y + grid_h, Ymin, "end")
 
     print("</svg>") > file
 }
@@ -177,6 +184,17 @@ function add_line(x, y, dx, dy) {
     "stroke=" q(mid_gray),
     "stroke-width=" q(1),
     "/>") > file
+}
+
+function add_label(x, y, num, anchor) {
+    label = int(num) == num ? num : sprintf("%." decimals "f", num)
+    print("<text font-size=" q(20),
+    "font-family=" q("sans-serif"),
+    "text-anchor=" q(anchor),
+    "x=" q(x),
+    "y=" q(y),
+    "fill=" q("black"),
+    ">" label "</text>") > file
 }
 
 '
