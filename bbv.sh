@@ -50,6 +50,7 @@ awk -v Pairwise=$pairwise ' # begin awk
 
 BEGIN {
     FS = "\t"
+    # Basic display parameters.
     Decimals = 5
     FontSize = 20
     Line_width = 3
@@ -75,6 +76,7 @@ NR == 1 {
     if (NF != Ncols) {
         die("number of columns is not constant.")
     }
+    # Determine x and y ranges.
     if (Pairwise) {
         for (k = 1; k <= NF; k += 2) x_check($k)
         for (k = 2; k <= NF; k += 2) y_check($k)
@@ -82,13 +84,14 @@ NR == 1 {
     else {
         for (k = 1; k <= NF; k += 1) y_check($k)
     }
+    # Store data for later plotting.
     for (k = 1; k <= NF; k++) {
         Data[NR, k] = $k
     }
 }
 
 END {
-    if (HasDied) exit 
+    if (HasDied) exit
     Nrows = NR
     if (!Pairwise) {
         Xmin = 1
@@ -100,9 +103,8 @@ END {
 
     file = "tmp.svg"
 
-    page_w = 1350
+    page_w = 1300
     page_h = 800
-    side_w = 185
     grid_w = 4 * 200
     grid_h = 4 * 150
     grid_x = 400
@@ -114,12 +116,16 @@ END {
     key_tab = 80
     key_step = 40
     text_dy = int(FontSize / 3)
+    page_white = "#fffff5"
+    grid_gray = "#aaaaaa"
+    text_color = "black"
 
     print("<svg xmlns=" q("http://www.w3.org/2000/svg"),
-          "width=" q(page_w), "height=" q(page_h),
-          ">") > file
-    fill_rect(0, 0, page_w, page_h, "white")
-    fill_rect(0, 0, side_w, page_h, "#e5e5e5")
+    "width=" q(page_w), "height=" q(page_h),
+    ">",
+    "<rect x=" q(0), "y=" q(0), "width=" q(page_w), "height=" q(page_h),
+    "fill=" q(page_white), "stroke-width=" q(0),
+    "/>") > file
 
     for (k = 0; k <= 4; k++) add_hair(grid_x + k * grid_w/4, grid_y, 0, grid_h)
     for (k = 0; k <= 4; k++) add_hair(grid_x, grid_y + k * grid_h/4, grid_w, 0)
@@ -130,10 +136,10 @@ END {
     add_label(grid_x - h_offset, grid_y + grid_h, Ymin, "end")
 
     if (Pairwise) {
-        for (k = 1; k <= Ncols; k += 2) plot_pairs(k )
+        for (k = 1; k <= Ncols; k += 2) plot_pairs(k)
      }
     else  {
-        for (k = 1; k <= Ncols; k++) plot_values(k )
+        for (k = 1; k <= Ncols; k++) plot_values(k)
     }
 
     print("</svg>") > file
@@ -180,22 +186,12 @@ function q(text) {
     return "\042" text "\042"
 }
 
-function fill_rect(x, y, w, h, color) {
-    print("<rect x=" q(x),
-    "y=" q(y),
-    "width=" q(w),
-    "height=" q(h),
-    "fill=" q(color),
-    "stroke-width=" q(0),
-    "/>") > file
-}
-
 function add_hair(x, y, dx, dy) {
     print("<line x1=" q(x),
     "y1=" q(y),
     "x2=" q(x + dx),
     "y2=" q(y + dy),
-    "stroke=" q("#aaaaaa"),
+    "stroke=" q(grid_gray),
     "stroke-width=" q(1),
     "/>") > file
 }
@@ -207,24 +203,25 @@ function add_label(x, y, num, anchor) {
     "text-anchor=" q(anchor),
     "x=" q(x),
     "y=" q(y + text_dy) ,
-    "fill=" q("black"),
+    "fill=" q(text_color),
     ">" label "</text>") > file
 }
 
 function plot_pairs(col,
-    marker_id, marker_ref, picker,
+    marker_id, marker_ref, color_picker,
     row, x, y) {
     marker_id = "M" col
     marker_ref = "url(#" marker_id ")"
-    picker = modulo((col + 1) / 2, Ncolors)
+    color_picker = modulo((col + 1) / 2, Ncolors)
 
     print("<marker id=" q(marker_id),
     "overflow=\"visible\">",
     "<circle r=" q(Dot_radius),
-    "fill=" q(Colors[picker]),
+    "fill=" q(Colors[color_picker]),
     "stroke-width=" q("none"),
     "/> </marker>") > file
 
+    # Draw scatter plot.
     print("<path fill=" q("none"),
     "stroke=" q("none"),
     "marker-start=" q(marker_ref),
@@ -238,6 +235,7 @@ function plot_pairs(col,
     }
     print("\"/>") > file
 
+    # Add key to legend.
     print("<path marker-start=" q(marker_ref),
     "d=" q("M" key_x "," key_y " Z"),
     "/>",
@@ -245,8 +243,8 @@ function plot_pairs(col,
     "font-family=" q("sans-serif"),
     "x=" q(key_tab),
     "y=" q(key_y + text_dy),
-    "fill=" q("black"),
-    ">" col "-" (col + 1),
+    "fill=" q(text_color),
+    ">" col ":" col+1,
     "</text>") > file
 
     key_y += key_step
@@ -259,6 +257,7 @@ function plot_values(col,
     dash_picker = modulo(col, Ncolors * 2)
     pattern = dash_picker <= Ncolors ? "none" : Dashes
 
+    # Draw line plot.
     print("<path fill=" q("none"),
     "stroke=" q(Colors[color_picker]),
     "stroke-dasharray=" q(pattern),
@@ -275,6 +274,7 @@ function plot_values(col,
     }
     print("\"/>") > file
 
+    # Add key to legend.
     print("<path fill=" q("none"),
     "stroke=" q(Colors[color_picker]),
     "stroke-dasharray=" q(pattern),
@@ -285,7 +285,7 @@ function plot_values(col,
     "font-family=" q("sans-serif"),
     "x=" q(key_tab),
     "y=" q(key_y + text_dy),
-    "fill=" q("black"),
+    "fill=" q(text_color),
     ">" col,
     "</text>") > file
 
@@ -296,6 +296,7 @@ function modulo(k, kmax,
     remain) {
     remain = k % kmax
     if (remain == 0) remain = kmax
+    # => return wrapped value from 1 to kmax
     return remain
 }
 
