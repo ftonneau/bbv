@@ -53,15 +53,15 @@ BEGIN {
     # Basic display parameters.
     Decimals = 5
     FontSize = 20
-    Line_width = 3
-    Dot_radius = 6
+    Line_width = 3.5
+    Dot_radius = 6.0
     Dashes = "5, 3"
-    Colors[1] = "#303030"
-    Colors[2] = "#b01010"
-    Colors[3] = "#137099"
-    Colors[4] = "#806b10"
-    Colors[5] = "#730037"
-    Colors[6] = "#707070"
+    Colors[1] = "#000000"
+    Colors[2] = "#006a99"
+    Colors[3] = "#909090"
+    Colors[4] = "#d132ac"
+    Colors[5] = "#b01010"
+    Colors[6] = "#b39100"
     Ncolors = 6
 }
 
