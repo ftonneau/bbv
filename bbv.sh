@@ -154,8 +154,7 @@ function die(msg) {
     exit
 }
 
-function too_close(u, v,
-    distance) {
+function too_close(u, v, _, distance) {
     distance = u > v ? u - v : v - u
     return distance <= 1e-10
 }
@@ -215,9 +214,7 @@ function add_label(x, y, num, anchor) {
     ">" label "</text>") > file
 }
 
-function plot_pairs(col,
-    marker_id, marker_ref, color_picker,
-    row, x, y) {
+function plot_pairs(col, _, marker_id, marker_ref, color_picker, row, x, y) {
     marker_id = "M" col
     marker_ref = "url(#" marker_id ")"
     color_picker = modulo((col + 1) / 2, Ncolors)
@@ -258,9 +255,7 @@ function plot_pairs(col,
     key_y += key_step
 }
 
-function plot_values(col,
-    color_picker, dash_picker, pattern,
-    row, y, yprev) {
+function plot_values(col, _, color_picker, dash_picker, pattern, row, y, yprev) {
     color_picker = modulo(col, Ncolors)
     dash_picker = modulo(col, Ncolors * 2)
     pattern = dash_picker <= Ncolors ? "none" : Dashes
@@ -300,8 +295,7 @@ function plot_values(col,
     key_y += key_step
 }
 
-function modulo(k, kmax,
-    remainder) {
+function modulo(k, kmax, _, remainder) {
     remainder = k % kmax
     if (remainder == 0) remainder = kmax
     return remainder # return wrapped value from 1 to kmax
