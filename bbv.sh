@@ -106,9 +106,9 @@ END {
     page_w = 1300
     page_h = 800
     grid_w = 4 * 200
-    grid_h = 4 * 150
+    grid_h = 4 * 160
     grid_x = 400
-    grid_y = 100
+    grid_y = 80
     h_offset = 15
     v_offset = 25
     key_x = 50
