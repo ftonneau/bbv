@@ -103,17 +103,17 @@ END {
     if (too_close(Xmin, Xmax)) { Xmin -= 1; Xmax += 1 }
     if (too_close(Ymin, Ymax)) { Ymin -= 1; Ymax += 1 }
 
-    page_w = 1300
+    page_w = 1100
     page_h = 800
     grid_w = 4 * 200
     grid_h = 4 * 160
-    grid_x = 400
+    grid_x = 200
     grid_y = 80
     h_offset = 15
     v_offset = 25
-    key_x = 50
-    key_y = 40
-    key_tab = 80
+    key_x = 80
+    key_y = 170
+    key_tab = 110
     key_step = 40
     text_dy = int(FontSize / 3)
     page_white = "#fffff5"
