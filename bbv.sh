@@ -100,6 +100,8 @@ END {
     }
     if (!x_range) die("x range could not be determined")
     if (!y_range) die("y range could not be determined")
+    if (too_close(Xmin, Xmax)) { Xmin -= 1; Xmax += 1 }
+    if (too_close(Ymin, Ymax)) { Ymin -= 1; Ymax += 1 }
 
     page_w = 1300
     page_h = 800
@@ -150,6 +152,12 @@ function die(msg) {
     HasDied = 1
     # Before the END block, jump to END; in the END block, exit for good.
     exit
+}
+
+function too_close(u, v,
+    distance) {
+    distance = u > v ? u - v : v - u
+    return distance <= 1e-10
 }
 
 function x_check(value) {
