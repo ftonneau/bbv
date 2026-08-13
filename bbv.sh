@@ -46,7 +46,7 @@ rm tmp.svg 2>/dev/null
 pairwise=0
 [ "$1" = x ] && pairwise=1
 
-awk -v Pairwise=$pairwise ' # begin awk
+awk -v Pairwise=$pairwise '
 
 BEGIN {
     FS = "\t"
@@ -150,7 +150,6 @@ END {
 function die(msg) {
     print "bbv halted: " msg > "/dev/stderr"
     HasDied = 1
-    # Before the END block, jump to END; in the END block, exit for good.
     exit
 }
 
@@ -298,7 +297,7 @@ function plot_values(col, _, color_picker, dash_picker, pattern, row, y, yprev) 
 function modulo(k, kmax, _, remainder) {
     remainder = k % kmax
     if (remainder == 0) remainder = kmax
-    return remainder # return wrapped value from 1 to kmax
+    return remainder    # return wrapped value from 1 to kmax
 }
 
 function xc(x) {
@@ -309,7 +308,9 @@ function yc(y) {
     return grid_y + grid_h - (y - Ymin)/(Ymax - Ymin) * grid_h
 }
 
-' # end awk
+'
+
+# ------------------------------------------------------------
 
 if [ -f tmp.svg ]; then
     $BBV_BACKEND tmp.svg &
