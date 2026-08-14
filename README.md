@@ -1,20 +1,20 @@
 # bbv
 
-Bbv (for "bare-bones viewer") is a minimalist, bare-minimum, data plotter for
-the command line. It is best suited for a quick look at functional relations
-gathered during exploratory data analysis.
+Bbv (for "bare-bones viewer") is a minimalist data plotter for the command
+line. It is best suited for a quick look at functional relations gathered
+during exploratory data analysis.
 
 Bbv uses stdin as input and must therefore be called from a pipe of shell
 commands: `command_1 | command_2 | ... | bbv`.
 
 The data must be tab-separated, and there is only one option, `x`.
 
-Piping your data into `bbv` will produce a line plot column by column.
+Piping your data into `bbv` will produce a **line plot column by column**.
 For example:
 
 ![line plot](columns.png)
 
-Piping your data into `bbb x` will produce a scatter plot of pairwise (x, y)
+Piping your data into `bbb x` will produce a **scatter plot** of pairwise (x, y)
 values. For example:
 
 ![scatter plot](pairwise.png)
@@ -40,8 +40,8 @@ keyboard arrows for paning. Some of these viewers also accept vim-like shortcuts
 ## Important
 
 Bbv does not support real-time plotting of a long-term running process. If
-dynamic plotting of a data stream is your use case, try an alternative such
-as [feedgnuplot]https://github.com/dkogan/feedgnuplot
+dynamic plotting of a data stream is your use case, there are excellent
+alternatives such as [feedgnuplot]https://github.com/dkogan/feedgnuplot
 
 
 # Installation
@@ -64,7 +64,7 @@ in your `.bashrc` or equivalent.
 
 Typing `bbv` directly in the terminal will print a short help on usage.
 
-Otherwise, usage is from a pipe, `... | bbv [x]`.
+Otherwise, usage is from a pipe, `... | bbv [x]`, `x` being optional.
 
 The x and y ranges of the resulting plot are set from the minima and maxima
 of your dataset. While plotting, bbv skips missing values and/or non-numeric
@@ -72,15 +72,14 @@ values.
 
 It goes without saying that there are no options for titles, annotations,
 legends, custom axes, axis transformations, custom labels, ticks, colors,
-styles, plot types, etc.
+styles, plot types, and so on.
 
 
 # Note on output
 
 The file that `bbv` produces from stdin (and that is opened by your chosen
 back end) is saved in your working directory as `tmp.svg`. This is a regular
-SVG file, editable in Inkscape (for example) to add anotations or any extra
-information.
+SVG file, fully editable in Inkscape (for example).
 
 
 # License
