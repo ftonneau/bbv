@@ -8,7 +8,7 @@ Bbv uses stdin as input and must therefore be called from a pipe of shell
 commands:
 
 ```
-`command_1 | command_2 | ... | bbv`.
+command_1 | command_2 | ... | bbv.
 ```
 
 The data must be tab-separated, and **there is only one option**, `x`.
