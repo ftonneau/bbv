@@ -1,28 +1,32 @@
 # bbv
 
-Bbv (for "bare-bones viewer") is a minimalist data plotter for the command
-line. It is best suited for a quick look at functional relations gathered
-during exploratory data analysis.
+Bbv (for "bare-bones viewer") is a **minimalist data plotter/viewer for the
+command line**. Bbv is best suited for a quick look at functional relations
+gathered during exploratory data analysis.
 
 Bbv uses stdin as input and must therefore be called from a pipe of shell
-commands: `command_1 | command_2 | ... | bbv`.
+commands:
 
-The data must be tab-separated, and there is only one option, `x`.
+```
+`command_1 | command_2 | ... | bbv`.
+```
 
-Piping your data into `bbv` will produce a **line plot column by column**.
+The data must be tab-separated, and **there is only one option**, `x`.
+
+Piping your data into `bbv` will produce a line plot column by column.
 For example:
 
 ![line plot](columns.png)
 
-Piping your data into `bbb x` will produce a **scatter plot** of pairwise (x, y)
+Piping your data into `bbb x` will produce a scatter plot of pairwise (x, y)
 values. For example:
 
 ![scatter plot](pairwise.png)
-feedgnuplot
 
 Bbv, being written in shell and awk, requires only a functioning POSIX system
-and does not tie you to any extra toolchain. You can use any image viewer as
-back end, provided it reads the SVG format. Possible candidates are:
+and does not tie you to any extra toolchain. You can use any lightweight image
+viewer as back end, provided it reads the SVG format. Possible candidates are,
+in alphabetical order:
 
 - eom (Eye of MATE)
 - feh
@@ -40,8 +44,8 @@ keyboard arrows for paning. Some of these viewers also accept vim-like shortcuts
 ## Important
 
 Bbv does not support real-time plotting of a long-term running process. If
-dynamic plotting of a data stream is your use case, there are excellent
-alternatives such as [feedgnuplot]https://github.com/dkogan/feedgnuplot
+dynamic plotting of a data stream is your use case, try an alternative such
+as [feedgnuplot](https://github.com/dkogan/feedgnuplot)
 
 
 # Installation
@@ -51,7 +55,8 @@ alternatives such as [feedgnuplot]https://github.com/dkogan/feedgnuplot
 * Make the file executable (`chmod +x bbv`) and put it into your PATH.
 
 * Specify your image back end via the environment variable, `BBV_BACKEND`.
-For example, if you want to use `imv` as viewer, write the following:
+For example, if you want to use [imv](https://sr.ht/~exec64/imv/) as viewer,
+write the following:
 
 ```
 export BBV_BACKEND='imv'
