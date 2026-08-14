@@ -44,8 +44,8 @@ keyboard arrows for paning. Some of these viewers also accept vim-like shortcuts
 ## Important
 
 Bbv does not support real-time plotting of a long-term running process. If
-dynamic plotting of a data stream is your use case, try an alternative such
-as [feedgnuplot](https://github.com/dkogan/feedgnuplot)
+dynamic plotting of a data stream is your use case, you will be better served
+by [feedgnuplot](https://github.com/dkogan/feedgnuplot).
 
 
 # Installation
@@ -64,6 +64,13 @@ export BBV_BACKEND='imv'
 
 in your `.bashrc` or equivalent.
 
+You can include command-line options in what you specify as bbv's back end.
+For example:
+
+```
+export BBV_BACKEND='imv -c overlay'
+```
+
 
 # Usage
 
@@ -71,9 +78,8 @@ Typing `bbv` directly in the terminal will print a short help on usage.
 
 Otherwise, usage is from a pipe, `... | bbv [x]`, `x` being optional.
 
-The x and y ranges of the resulting plot are set from the minima and maxima
-of your dataset. While plotting, bbv skips missing values and/or non-numeric
-values.
+The ranges of the resulting plot are the minima and maxima of your dataset.
+While plotting, bbv skips missing values and non-numeric values.
 
 It goes without saying that there are no options for titles, annotations,
 legends, custom axes, axis transformations, custom labels, ticks, colors,
