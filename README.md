@@ -89,8 +89,8 @@ styles, plot types, and so on.
 # Note on output
 
 The file that `bbv` produces from stdin (and that is opened by your chosen
-back end) is saved in your working directory as `tmp.svg`. This is a regular
-SVG file, fully editable in Inkscape (for example).
+back end) is saved in your working directory as `tmp_bbv.svg`. This is a
+regular SVG file, fully editable in Inkscape (for example).
 
 
 # License
