@@ -13,7 +13,7 @@ Typing 'bbv x' produces a scatter plot of pairwise (x, y) values, specified
 along successive data columns: x1, y1, x2, y2, ..., xN, yN.
 
 Data columns must be tab-separated. The output from bbv is a temporary SVG
-file in the working directory (tmp.svg), to be opened by the viewer of your
+file in the working directory (tmp_bbv.svg), to be opened by the viewer of your
 choice. Which program you want to use must be specified in the environment
 variable, BBV_BACKEND. For example, with imv as image viewer:
 
@@ -41,7 +41,7 @@ fi
 
 # ------------------------------------------------------------
 
-rm tmp.svg 2>/dev/null
+rm tmp_bbv.svg 2>/dev/null
 
 pairwise=0
 [ "$1" = x ] && pairwise=1
@@ -120,7 +120,7 @@ END {
     grid_gray = "#aaaaaa"
     text_color = "black"
 
-    file = "tmp.svg"
+    file = "tmp_bbv.svg"
 
     print("<svg xmlns=" q("http://www.w3.org/2000/svg"),
     "width=" q(page_w), "height=" q(page_h),
@@ -312,8 +312,8 @@ function yc(y) {
 
 # ------------------------------------------------------------
 
-if [ -f tmp.svg ]; then
-    $BBV_BACKEND tmp.svg &
+if [ -f tmp_bbv.svg ]; then
+    $BBV_BACKEND tmp_bbv.svg &
 else
     exit 1
 fi
