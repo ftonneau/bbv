@@ -22,7 +22,7 @@ values. For example:
 
 ![scatter plot](pairwise.png)
 
-Bbv, being written in POSIX shell and awk, requires only a functioning POSIX
+Bbv, being written in POSIX shell and Awk, requires only a functioning POSIX
 system and does not tie you to any extra toolchain. You can use any lightweight
 image viewer as back end, provided it reads the SVG format. Possible candidates
 are, in alphabetical order:
@@ -38,7 +38,7 @@ are, in alphabetical order:
 
 All of these viewers open SVGs, permit image zooming (+/-), and allow you to use
 keyboard arrows for paning. Some of these viewers also accept vim-like shortcuts
-(h, j, k, l) for arrows.
+(h, j, k, l) for arrow movements.
 
 ## Important
 
